@@ -1,8 +1,18 @@
 class RecipesController < ApplicationController
   
   def index
-    recipes = Recipe.all 
+    recipes = Recipe.all
+    
+    search_term = params[:search]
+
+    if search_term
+      recipes = recipes.where("title iLIKE ? OR ingredients iLIKE ?",
+                                 "%#{search_term}%", 
+                                 "%#{search_term}%")
+    end
+
     render json: recipes.as_json
+  
   end
 
   def create
@@ -33,11 +43,10 @@ class RecipesController < ApplicationController
     render json: recipe.as_json #make everything show up as json
   end
 
-def destroy
-  recipes = Recipe.find(params[:id])
-  recipe.destroy
-  render json: {message: "Successfully destroyed Recipe ##{recipe.id}."}
-end
-
+  def destroy
+    recipes = Recipe.find(params[:id])
+    recipe.destroy
+    render json: {message: "Successfully destroyed Recipe ##{recipe.id}."}
+  end
 
 end
